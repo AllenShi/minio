@@ -31,7 +31,7 @@ var errConfigNotFound = errors.New("config file not found")
 func readConfig(ctx context.Context, objAPI ObjectLayer, configFile string) ([]byte, error) {
 	var buffer bytes.Buffer
 	// Read entire content by setting size to -1
-	if err := objAPI.GetObject(ctx, minioMetaBucket, configFile, 0, -1, &buffer, ""); err != nil {
+	if err := objAPI.GetObject(ctx, minioMetaBucket, configFile, 0, -1, &buffer, "", ObjectOptions{}); err != nil {
 		// Treat object not found as config not found.
 		if isErrObjectNotFound(err) || isErrIncompleteBody(err) {
 			return nil, errConfigNotFound
@@ -56,7 +56,7 @@ func saveConfig(ctx context.Context, objAPI ObjectLayer, configFile string, data
 		return err
 	}
 
-	_, err = objAPI.PutObject(ctx, minioMetaBucket, configFile, hashReader, nil)
+	_, err = objAPI.PutObject(ctx, minioMetaBucket, configFile, hashReader, nil, ObjectOptions{})
 	return err
 }
 
@@ -105,7 +105,7 @@ func checkConfig(ctx context.Context, objAPI ObjectLayer, configFile string) err
 		return checkConfigEtcd(ctx, globalEtcdClient, configFile)
 	}
 
-	if _, err := objAPI.GetObjectInfo(ctx, minioMetaBucket, configFile); err != nil {
+	if _, err := objAPI.GetObjectInfo(ctx, minioMetaBucket, configFile, ObjectOptions{}); err != nil {
 		// Treat object not found as config not found.
 		if isErrObjectNotFound(err) {
 			return errConfigNotFound

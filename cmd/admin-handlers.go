@@ -676,7 +676,7 @@ func (a adminAPIHandlers) GetConfigKeysHandler(w http.ResponseWriter, r *http.Re
 	}
 
 	password := config.GetCredential().SecretKey
-	econfigData, err := madmin.EncryptServerConfigData(password, []byte(newConfigStr))
+	econfigData, err := madmin.EncryptData(password, []byte(newConfigStr))
 	if err != nil {
 		logger.LogIf(ctx, err)
 		writeErrorResponseJSON(w, toAdminAPIErrCode(err), r.URL)
@@ -832,15 +832,6 @@ func (a adminAPIHandlers) SetConfigHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// Read configuration bytes from request body.
-	configBuf := make([]byte, maxConfigJSONSize+1)
-	n, err := io.ReadFull(r.Body, configBuf)
-	if err == nil {
-		// More than maxConfigSize bytes were available
-		writeErrorResponseJSON(w, ErrAdminConfigTooLarge, r.URL)
-		return
-	}
-
 	if r.ContentLength > maxEConfigJSONSize || r.ContentLength == -1 {
 		// More than maxConfigSize bytes were available
 		writeErrorResponseJSON(w, ErrAdminConfigTooLarge, r.URL)
@@ -969,7 +960,7 @@ func (a adminAPIHandlers) SetConfigKeysHandler(w http.ResponseWriter, r *http.Re
 			writeErrorResponseJSON(w, ErrAdminConfigBadJSON, r.URL)
 			return
 		}
-		elem, dErr := madmin.DecryptServerConfigData(password, bytes.NewBuffer([]byte(encryptedElem)))
+		elem, dErr := madmin.DecryptData(password, bytes.NewBuffer([]byte(encryptedElem)))
 		if dErr != nil {
 			logger.LogIf(ctx, dErr)
 			writeErrorResponseJSON(w, ErrAdminConfigBadJSON, r.URL)
