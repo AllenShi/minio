@@ -151,9 +151,9 @@ func main() {
 	}
 	fmt.Println(string(c))
 
-	// // Uncommend this to use Minio API operations by initializin minio
-	// // client with obtained credentials.
-	//
+	// Uncommend this to use Minio API operations by initializin minio
+	// client with obtained credentials.
+
 	// opts := &minio.Options{
 	// 	Creds: credentials.NewStaticV4(a.Result.Credentials.AccessKey,
 	// 		a.Result.Credentials.SecretKey,
@@ -166,11 +166,12 @@ func main() {
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	//
-	// n, err := clnt.PutObject("my-bucketname", "my-objectname", bytes.NewReader([]byte("Hello, World")), "application/octet-stream")
+
+	// d := bytes.NewReader([]byte("Hello, World"))
+	// n, err := clnt.PutObject("my-bucketname", "my-objectname", d, d.Size(), minio.PutObjectOptions{})
 	// if err != nil {
-	//      log.Fatalln(err)
+	// 	log.Fatalln(err)
 	// }
-	//
+
 	// log.Println("Uploaded", "my-objectname", " of size: ", n, "Successfully.")
 }
